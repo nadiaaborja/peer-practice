@@ -1,0 +1,8 @@
+{
+  "name": "listening-practice",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A peer-support listening rehearsal tool. Claude plays a fictional peer and coaches the user on non-directive technique.",
+  "engines": { "node": ">=18" }
+}

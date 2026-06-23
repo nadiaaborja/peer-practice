@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Listening Practice — a peer-support rehearsal tool</title>
+<style>
+  /* ───────────────────────────────────────────────────────────────────────
+     Design direction: a calm "practice room." This is emotionally weighted
+     rehearsal, so the palette is low-arousal — deep ink and soft paper with a
+     single muted sage accent, no alarming colors. The signature is the
+     two-voice transcript: the fictional peer and the coach are visually
+     distinct registers, so the learner always knows who is speaking.
+     Type: Fraunces (display, warm + human) over Inter (body, clean + legible).
+     ─────────────────────────────────────────────────────────────────────── */
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --ink: #1f2421;
+    --ink-soft: #4a534d;
+    --paper: #f6f4ee;
+    --paper-raised: #fffefb;
+    --line: #e0ddd3;
+    --sage: #5b7f6e;
+    --sage-soft: #e9f0eb;
+    --peer: #3a4a5c;
+    --peer-soft: #eaeef2;
+    --flag: #9a5b46;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(31,36,33,.04), 0 8px 24px rgba(31,36,33,.06);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  header { margin-bottom: 8px; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--sage); font-weight: 600; margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif; font-weight: 500;
+    font-size: clamp(28px, 5vw, 40px); line-height: 1.08;
+    margin: 0 0 12px; letter-spacing: -.01em;
+  }
+  .lede { color: var(--ink-soft); font-size: 16px; max-width: 56ch; margin: 0; }
+
+  /* The boundary notice — load-bearing for the whole project. Quiet but
+     unmissable: this is a practice tool, not a real counseling line. */
+  .boundary {
+    margin: 22px 0 28px; padding: 14px 16px;
+    background: var(--paper-raised); border: 1px solid var(--line);
+    border-left: 3px solid var(--sage); border-radius: 10px;
+    font-size: 13.5px; color: var(--ink-soft);
+  }
+  .boundary strong { color: var(--ink); font-weight: 600; }
+
+  .panel {
+    background: var(--paper-raised); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 22px; margin-bottom: 18px;
+  }
+
+  .pickrow { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  label.fld { font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+  select, textarea, button { font-family: inherit; font-size: 15px; }
+  select {
+    padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
+    background: var(--paper); color: var(--ink); flex: 1; min-width: 200px;
+  }
+
+  /* Transcript: two voices. */
+  .turn { margin: 16px 0; display: flex; flex-direction: column; }
+  .who {
+    font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase;
+    font-weight: 600; margin-bottom: 5px;
+  }
+  .bubble { padding: 12px 15px; border-radius: 12px; font-size: 15px; max-width: 92%; }
+
+  .peer .who { color: var(--peer); }
+  .peer .bubble { background: var(--peer-soft); border: 1px solid #dde3ea; align-self: flex-start; }
+
+  .me { align-items: flex-end; }
+  .me .who { color: var(--ink-soft); }
+  .me .bubble { background: var(--ink); color: var(--paper); align-self: flex-end; }
+
+  /* Coach card: visually a step OUT of the roleplay. */
+  .coach {
+    margin: 16px 0; border: 1px solid var(--line); border-radius: 12px;
+    overflow: hidden; background: var(--paper);
+  }
+  .coach-head {
+    background: var(--sage-soft); padding: 8px 14px; font-size: 11.5px;
+    letter-spacing: .08em; text-transform: uppercase; font-weight: 600; color: var(--sage);
+  }
+  .coach-body { padding: 12px 15px; font-size: 14.5px; }
+  .coach-body .worked { color: var(--ink); }
+  .coach-body .worked b { color: var(--sage); }
+  .coach-body .adjust { color: var(--ink-soft); margin-top: 8px; }
+  .coach-body .adjust b { color: var(--flag); }
+  .tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11.5px; padding: 3px 9px; border-radius: 999px;
+    background: var(--sage-soft); color: var(--sage); font-weight: 500;
+  }
+
+  .composer { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+  textarea {
+    width: 100%; min-height: 84px; resize: vertical; padding: 12px 14px;
+    border-radius: 11px; border: 1px solid var(--line); background: var(--paper);
+    color: var(--ink); line-height: 1.5;
+  }
+  textarea:focus, select:focus { outline: 2px solid var(--sage); outline-offset: 1px; }
+  .actions { display: flex; gap: 10px; align-items: center; }
+  button {
+    background: var(--sage); color: #fff; border: none; padding: 11px 20px;
+    border-radius: 10px; font-weight: 600; cursor: pointer; transition: opacity .15s;
+  }
+  button:hover { opacity: .9; }
+  button:disabled { opacity: .5; cursor: default; }
+  button.ghost { background: transparent; color: var(--sage); border: 1px solid var(--line); }
+  .hint { font-size: 12.5px; color: var(--ink-soft); }
+  .err { color: var(--flag); font-size: 13.5px; margin-top: 8px; }
+
+  .thinking { font-size: 13.5px; color: var(--sage); font-style: italic; padding: 6px 2px; }
+
+  footer { margin-top: 36px; font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
+  footer a { color: var(--sage); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .turn, .coach { animation: rise .25s ease both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Listening practice</div>
+    <h1>Get reps on staying with someone.</h1>
+    <p class="lede">A rehearsal space for peer-support listening. A fictional person opens up; you write how you'd respond; you get feedback on whether you stayed non-directive — companioning, not fixing.</p>
+  </header>
+
+  <div class="boundary">
+    <strong>This is practice, not a counseling line.</strong> It's a skills rehearsal for people already in supervised peer-support training. It doesn't certify anyone, replace your training or supervisor, or handle anyone in real distress. If a real person needs support, follow your program's actual protocol.
+  </div>
+
+  <div class="panel">
+    <div class="pickrow">
+      <label class="fld" for="scenario">Scenario</label>
+      <select id="scenario"></select>
+      <button class="ghost" id="startBtn" type="button">Start</button>
+    </div>
+    <div id="transcript"></div>
+    <div id="composer" class="composer" style="display:none;">
+      <textarea id="reply" placeholder="Write what you'd say back…" aria-label="Your response"></textarea>
+      <div class="actions">
+        <button id="sendBtn" type="button">Send response</button>
+        <span class="hint">Aim to reflect, validate, and open — not to solve.</span>
+      </div>
+      <div id="err" class="err" style="display:none;"></div>
+    </div>
+  </div>
+
+  <footer>
+    Built as a practice companion, not a clinical tool. Scenarios are fictional. Your responses are sent to the model only to generate feedback and aren't stored by this page.
+  </footer>
+</div>
+
+<script type="module">
+  import { SCENARIOS, buildGraderInstructions } from './scenarios.js';
+
+  const grader = buildGraderInstructions();
+  const sel = document.getElementById('scenario');
+  const startBtn = document.getElementById('startBtn');
+  const transcript = document.getElementById('transcript');
+  const composer = document.getElementById('composer');
+  const replyEl = document.getElementById('reply');
+  const sendBtn = document.getElementById('sendBtn');
+  const errEl = document.getElementById('err');
+
+  SCENARIOS.forEach((s, i) => {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = `${s.tag} — “${s.opener.slice(0, 40)}…”`;
+    sel.appendChild(o);
+  });
+
+  let current = null;
+  let history = []; // [{role, content}]
+
+  function esc(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+  function addPeer(text){
+    transcript.insertAdjacentHTML('beforeend',
+      `<div class="turn peer"><span class="who">Them</span><div class="bubble">${esc(text)}</div></div>`);
+  }
+  function addMe(text){
+    transcript.insertAdjacentHTML('beforeend',
+      `<div class="turn me"><span class="who">You</span><div class="bubble">${esc(text)}</div></div>`);
+  }
+  function addCoach(c){
+    const tags = (c.techniquesSpotted||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('');
+    transcript.insertAdjacentHTML('beforeend',
+      `<div class="coach"><div class="coach-head">Coach</div><div class="coach-body">
+        ${c.worked?`<div class="worked"><b>Worked:</b> ${esc(c.worked)}</div>`:''}
+        ${c.adjust?`<div class="adjust"><b>Try:</b> ${esc(c.adjust)}</div>`:''}
+        ${tags?`<div class="tags">${tags}</div>`:''}
+      </div></div>`);
+  }
+  function thinking(on){
+    let t = document.getElementById('thinking');
+    if(on && !t){ transcript.insertAdjacentHTML('beforeend','<div class="thinking" id="thinking">listening…</div>'); }
+    if(!on && t){ t.remove(); }
+  }
+
+  function start(){
+    current = SCENARIOS[Number(sel.value)];
+    history = [];
+    transcript.innerHTML = '';
+    addPeer(current.opener);
+    composer.style.display = 'flex';
+    replyEl.value = ''; replyEl.focus();
+    errEl.style.display = 'none';
+  }
+  startBtn.addEventListener('click', start);
+
+  async function send(){
+    const text = replyEl.value.trim();
+    if(!text || !current) return;
+    errEl.style.display = 'none';
+    addMe(text);
+    replyEl.value = '';
+    sendBtn.disabled = true;
+    thinking(true);
+
+    try {
+      const res = await fetch('/api/coach', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          graderInstructions: grader,
+          scenarioOpener: current.opener,
+          history,
+          userReply: text,
+        }),
+      });
+      const data = await res.json();
+      thinking(false);
+      if(!res.ok){ throw new Error(data.error || 'Request failed'); }
+
+      if(data.coach) addCoach(data.coach);
+      if(data.peerReply && data.peerReply !== '(…)') addPeer(data.peerReply);
+
+      history.push({ role:'user', content: text });
+      history.push({ role:'assistant', content: JSON.stringify(data) });
+    } catch(e){
+      thinking(false);
+      errEl.textContent = e.message + ' — give it a moment and try again.';
+      errEl.style.display = 'block';
+    } finally {
+      sendBtn.disabled = false;
+      window.scrollTo({ top: document.body.scrollHeight, behavior:'smooth' });
+    }
+  }
+  sendBtn.addEventListener('click', send);
+  replyEl.addEventListener('keydown', e=>{ if(e.key==='Enter' && (e.metaKey||e.ctrlKey)) send(); });
+</script>
+</body>
+</html>
