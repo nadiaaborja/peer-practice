@@ -3,221 +3,277 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Listening Practice — a peer-support rehearsal tool</title>
+<title>The Practice Room</title>
 <style>
-  /* ───────────────────────────────────────────────────────────────────────
-     Design direction: a calm "practice room." This is emotionally weighted
-     rehearsal, so the palette is low-arousal — deep ink and soft paper with a
-     single muted sage accent, no alarming colors. The signature is the
-     two-voice transcript: the fictional peer and the coach are visually
-     distinct registers, so the learner always knows who is speaking.
-     Type: Fraunces (display, warm + human) over Inter (body, clean + legible).
-     ─────────────────────────────────────────────────────────────────────── */
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap');
 
   :root {
-    --ink: #1f2421;
-    --ink-soft: #4a534d;
-    --paper: #f6f4ee;
-    --paper-raised: #fffefb;
-    --line: #e0ddd3;
-    --sage: #5b7f6e;
-    --sage-soft: #e9f0eb;
-    --peer: #3a4a5c;
-    --peer-soft: #eaeef2;
-    --flag: #9a5b46;
-    --radius: 14px;
-    --shadow: 0 1px 2px rgba(31,36,33,.04), 0 8px 24px rgba(31,36,33,.06);
+    --paper: #f4f1ea;
+    --paper-line: #ebe7dd;
+    --card: #fdfbf6;
+    --ink: #23211d;
+    --ink-soft: #6a6357;
+    --rule: #ddd5c5;
+    --accent: #3a352c;
+    --accent-soft: #eae4d8;
+    --them: #8a8377;
+    --them-soft: #eae4d8;
+    --you-bg: #23211d;
+    --pencil: #b3aa99;
+    --radius: 4px;
   }
-
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
     font-family: 'Inter', system-ui, sans-serif;
     color: var(--ink);
     background: var(--paper);
+    background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--paper-line) 31px 32px);
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 40px 22px 100px; }
 
-  header { margin-bottom: 8px; }
-  .eyebrow {
-    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--sage); font-weight: 600; margin-bottom: 10px;
+  .stamp {
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px; opacity: .8;
   }
   h1 {
-    font-family: 'Fraunces', serif; font-weight: 500;
-    font-size: clamp(28px, 5vw, 40px); line-height: 1.08;
-    margin: 0 0 12px; letter-spacing: -.01em;
+    font-family: 'Newsreader', serif; font-weight: 500;
+    font-size: clamp(30px, 6vw, 46px); line-height: 1.05;
+    margin: 0 0 14px; letter-spacing: -.01em; color: var(--ink);
   }
-  .lede { color: var(--ink-soft); font-size: 16px; max-width: 56ch; margin: 0; }
+  .lede {
+    font-family: 'Newsreader', serif; font-size: 18px; color: var(--ink-soft);
+    max-width: 54ch; margin: 0; line-height: 1.5;
+  }
 
-  /* The boundary notice — load-bearing for the whole project. Quiet but
-     unmissable: this is a practice tool, not a real counseling line. */
   .boundary {
-    margin: 22px 0 28px; padding: 14px 16px;
-    background: var(--paper-raised); border: 1px solid var(--line);
-    border-left: 3px solid var(--sage); border-radius: 10px;
-    font-size: 13.5px; color: var(--ink-soft);
+    margin: 26px 0 30px; padding: 15px 17px 15px 19px;
+    background: var(--accent-soft); border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent); border-radius: var(--radius);
+    font-size: 13.5px; color: #4a4438;
   }
-  .boundary strong { color: var(--ink); font-weight: 600; }
+  .boundary strong { color: var(--accent); font-weight: 600; }
 
-  .panel {
-    background: var(--paper-raised); border: 1px solid var(--line);
-    border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 22px; margin-bottom: 18px;
+  .picker {
+    background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius);
+    padding: 16px 18px; margin-bottom: 22px;
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
   }
-
-  .pickrow { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  label.fld { font-size: 13px; font-weight: 600; color: var(--ink-soft); }
-  select, textarea, button { font-family: inherit; font-size: 15px; }
+  .picker label {
+    font-family: 'Spline Sans Mono', monospace; font-size: 11px;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+  }
   select {
-    padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
-    background: var(--paper); color: var(--ink); flex: 1; min-width: 200px;
+    flex: 1; min-width: 200px; font-family: inherit; font-size: 15px;
+    padding: 9px 12px; border: 1px solid var(--rule); border-radius: var(--radius);
+    background: var(--paper); color: var(--ink);
   }
-
-  /* Transcript: two voices. */
-  .turn { margin: 16px 0; display: flex; flex-direction: column; }
-  .who {
-    font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase;
-    font-weight: 600; margin-bottom: 5px;
-  }
-  .bubble { padding: 12px 15px; border-radius: 12px; font-size: 15px; max-width: 92%; }
-
-  .peer .who { color: var(--peer); }
-  .peer .bubble { background: var(--peer-soft); border: 1px solid #dde3ea; align-self: flex-start; }
-
-  .me { align-items: flex-end; }
-  .me .who { color: var(--ink-soft); }
-  .me .bubble { background: var(--ink); color: var(--paper); align-self: flex-end; }
-
-  /* Coach card: visually a step OUT of the roleplay. */
-  .coach {
-    margin: 16px 0; border: 1px solid var(--line); border-radius: 12px;
-    overflow: hidden; background: var(--paper);
-  }
-  .coach-head {
-    background: var(--sage-soft); padding: 8px 14px; font-size: 11.5px;
-    letter-spacing: .08em; text-transform: uppercase; font-weight: 600; color: var(--sage);
-  }
-  .coach-body { padding: 12px 15px; font-size: 14.5px; }
-  .coach-body .worked { color: var(--ink); }
-  .coach-body .worked b { color: var(--sage); }
-  .coach-body .adjust { color: var(--ink-soft); margin-top: 8px; }
-  .coach-body .adjust b { color: var(--flag); }
-  .tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
-  .tag {
-    font-size: 11.5px; padding: 3px 9px; border-radius: 999px;
-    background: var(--sage-soft); color: var(--sage); font-weight: 500;
-  }
-
-  .composer { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
-  textarea {
-    width: 100%; min-height: 84px; resize: vertical; padding: 12px 14px;
-    border-radius: 11px; border: 1px solid var(--line); background: var(--paper);
-    color: var(--ink); line-height: 1.5;
-  }
-  textarea:focus, select:focus { outline: 2px solid var(--sage); outline-offset: 1px; }
-  .actions { display: flex; gap: 10px; align-items: center; }
   button {
-    background: var(--sage); color: #fff; border: none; padding: 11px 20px;
-    border-radius: 10px; font-weight: 600; cursor: pointer; transition: opacity .15s;
+    font-family: inherit; font-size: 15px; cursor: pointer;
+    border-radius: var(--radius); border: none; transition: opacity .15s, transform .05s;
   }
-  button:hover { opacity: .9; }
-  button:disabled { opacity: .5; cursor: default; }
-  button.ghost { background: transparent; color: var(--sage); border: 1px solid var(--line); }
-  .hint { font-size: 12.5px; color: var(--ink-soft); }
-  .err { color: var(--flag); font-size: 13.5px; margin-top: 8px; }
+  button:active { transform: translateY(1px); }
+  .btn-start { background: var(--accent); color: #f4f1ea; padding: 9px 20px; font-weight: 500; }
+  .btn-start:hover { opacity: .88; }
 
-  .thinking { font-size: 13.5px; color: var(--sage); font-style: italic; padding: 6px 2px; }
+  .turn { margin: 22px 0; }
+  .voice {
+    font-family: 'Spline Sans Mono', monospace; font-size: 10.5px;
+    letter-spacing: .16em; text-transform: uppercase; margin-bottom: 6px; color: var(--pencil);
+  }
+  .said {
+    font-family: 'Newsreader', serif; font-size: 17.5px; line-height: 1.5;
+    padding: 13px 17px; border-radius: var(--radius); max-width: 90%;
+  }
+  .them .said { background: var(--them-soft); border: 1px solid var(--rule); color: #3a352e; }
+  .them .voice { color: var(--them); }
 
-  footer { margin-top: 36px; font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
-  footer a { color: var(--sage); }
+  .you { display: flex; flex-direction: column; align-items: flex-end; }
+  .you .voice { color: var(--ink-soft); }
+  .you .said { background: var(--you-bg); color: #f4ede1; max-width: 90%; }
+
+  .coach {
+    margin: 18px 0 18px 22px; padding: 4px 0 4px 18px;
+    border-left: 2px dashed var(--pencil);
+  }
+  .coach .voice { color: var(--accent); opacity: .85; }
+  .coach .line { font-size: 14.5px; line-height: 1.55; margin: 4px 0; }
+  .coach .worked b { color: var(--ink); font-weight: 600; }
+  .coach .adjust { color: var(--ink-soft); }
+  .coach .adjust b { color: var(--accent); font-weight: 600; }
+  .tags { margin-top: 9px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-family: 'Spline Sans Mono', monospace; font-size: 10.5px;
+    padding: 2px 8px; border-radius: 2px; background: var(--paper-line);
+    color: var(--ink-soft); border: 1px solid var(--rule);
+  }
+
+  .composer { margin-top: 24px; }
+  textarea {
+    width: 100%; min-height: 88px; resize: vertical;
+    font-family: 'Newsreader', serif; font-size: 17px; line-height: 1.5;
+    padding: 14px 16px; border: 1px solid var(--rule); border-radius: var(--radius);
+    background: var(--card); color: var(--ink);
+  }
+  textarea::placeholder { color: var(--pencil); font-style: italic; }
+  textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .row { display: flex; gap: 12px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  .btn-send { background: var(--accent); color: #f4f1ea; padding: 11px 22px; font-weight: 500; }
+  .btn-send:hover { opacity: .88; }
+  .btn-send:disabled { opacity: .45; cursor: default; }
+  .btn-wrap {
+    background: transparent; color: var(--accent); padding: 11px 18px;
+    border: 1px solid var(--rule); font-weight: 500;
+  }
+  .btn-wrap:hover { background: var(--accent-soft); }
+  .btn-wrap:disabled { opacity: .45; cursor: default; }
+
+  /* End-of-session debrief: a clipped summary card, set apart from turn coaching */
+  .debrief {
+    margin: 30px 0 10px; padding: 22px 24px;
+    background: var(--card); border: 1px solid var(--rule);
+    border-top: 3px solid var(--accent); border-radius: var(--radius);
+  }
+  .debrief .voice { color: var(--accent); opacity: .85; margin-bottom: 10px; }
+  .debrief h2 {
+    font-family: 'Newsreader', serif; font-weight: 500; font-size: 21px;
+    line-height: 1.25; margin: 0 0 14px; color: var(--ink);
+  }
+  .debrief .cols { display: flex; gap: 26px; flex-wrap: wrap; margin: 0 0 14px; }
+  .debrief .col { flex: 1; min-width: 150px; }
+  .debrief .col .label {
+    font-family: 'Spline Sans Mono', monospace; font-size: 10px;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--pencil); margin-bottom: 6px;
+  }
+  .debrief .col ul { margin: 0; padding: 0; list-style: none; }
+  .debrief .col li { font-size: 14px; color: var(--ink); padding: 2px 0; }
+  .debrief .summary { font-size: 14.5px; line-height: 1.6; color: var(--ink-soft); margin: 0 0 14px; }
+  .debrief .carry {
+    font-size: 14.5px; line-height: 1.55; padding: 12px 14px;
+    background: var(--accent-soft); border-radius: var(--radius); color: #4a4438;
+  }
+  .debrief .carry b { color: var(--accent); font-weight: 600; }
+  .hint {
+    font-family: 'Spline Sans Mono', monospace; font-size: 11.5px;
+    color: var(--ink-soft); letter-spacing: .02em;
+  }
+  .thinking { font-style: italic; color: var(--pencil); font-family: 'Newsreader', serif; font-size: 16px; padding: 6px 0; }
+  .err { color: var(--accent); font-size: 13.5px; margin-top: 10px; }
+
+  footer {
+    margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--rule);
+    font-size: 12.5px; color: var(--ink-soft); line-height: 1.6;
+  }
 
   @media (prefers-reduced-motion: no-preference) {
-    .turn, .coach { animation: rise .25s ease both; }
-    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .turn, .coach { animation: settle .28s ease both; }
+    @keyframes settle { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  }
+  @media (max-width: 520px) {
+    .said { max-width: 100%; font-size: 16.5px; }
+    .coach { margin-left: 8px; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">Listening practice</div>
-    <h1>Get reps on staying with someone.</h1>
-    <p class="lede">A rehearsal space for peer-support listening. A fictional person opens up; you write how you'd respond; you get feedback on whether you stayed non-directive — companioning, not fixing.</p>
+    <div class="stamp">The Practice Room · peer support</div>
+    <h1>Train the instinct to stay, not solve.</h1>
+    <p class="lede">A rehearsal space for peer-support listening. A fictional person opens up, you write how you'd respond, and you get feedback on whether you stayed non-directive. The goal is companioning, not fixing.</p>
   </header>
 
   <div class="boundary">
     <strong>This is practice, not a counseling line.</strong> It's a skills rehearsal for people already in supervised peer-support training. It doesn't certify anyone, replace your training or supervisor, or handle anyone in real distress. If a real person needs support, follow your program's actual protocol.
   </div>
 
-  <div class="panel">
-    <div class="pickrow">
-      <label class="fld" for="scenario">Scenario</label>
-      <select id="scenario"></select>
-      <button class="ghost" id="startBtn" type="button">Start</button>
+  <div class="picker">
+    <label for="scenario">Scenario</label>
+    <select id="scenario"></select>
+    <button class="btn-start" id="startBtn" type="button">Begin</button>
+  </div>
+
+  <div id="transcript"></div>
+
+  <div id="composer" class="composer" style="display:none;">
+    <textarea id="reply" placeholder="Write what you'd say back..." aria-label="Your response"></textarea>
+    <div class="row">
+      <button class="btn-send" id="sendBtn" type="button">Send</button>
+      <button class="btn-wrap" id="wrapBtn" type="button" style="display:none;">Wrap up this conversation</button>
+      <span class="hint">reflect · validate · open · don't solve</span>
     </div>
-    <div id="transcript"></div>
-    <div id="composer" class="composer" style="display:none;">
-      <textarea id="reply" placeholder="Write what you'd say back…" aria-label="Your response"></textarea>
-      <div class="actions">
-        <button id="sendBtn" type="button">Send response</button>
-        <span class="hint">Aim to reflect, validate, and open — not to solve.</span>
-      </div>
-      <div id="err" class="err" style="display:none;"></div>
-    </div>
+    <div id="err" class="err" style="display:none;"></div>
   </div>
 
   <footer>
-    Built as a practice companion, not a clinical tool. Scenarios are fictional. Your responses are sent to the model only to generate feedback and aren't stored by this page.
+    A practice companion, not a clinical tool. Every scenario is fictional. Responses are sent to the model only to generate feedback and aren't stored here.
   </footer>
 </div>
 
 <script type="module">
-  import { SCENARIOS, buildGraderInstructions } from './scenarios.js';
+  import { SCENARIOS, buildGraderInstructions, buildDebriefInstructions } from './scenarios.js';
 
   const grader = buildGraderInstructions();
+  const debriefPrompt = buildDebriefInstructions();
   const sel = document.getElementById('scenario');
   const startBtn = document.getElementById('startBtn');
   const transcript = document.getElementById('transcript');
   const composer = document.getElementById('composer');
   const replyEl = document.getElementById('reply');
   const sendBtn = document.getElementById('sendBtn');
+  const wrapBtn = document.getElementById('wrapBtn');
   const errEl = document.getElementById('err');
 
   SCENARIOS.forEach((s, i) => {
     const o = document.createElement('option');
-    o.value = i; o.textContent = `${s.tag} — “${s.opener.slice(0, 40)}…”`;
+    o.value = i; o.textContent = s.tag;
     sel.appendChild(o);
   });
 
   let current = null;
-  let history = []; // [{role, content}]
+  let history = [];
 
   function esc(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
 
-  function addPeer(text){
+  function addThem(text){
     transcript.insertAdjacentHTML('beforeend',
-      `<div class="turn peer"><span class="who">Them</span><div class="bubble">${esc(text)}</div></div>`);
+      `<div class="turn them"><div class="voice">Them</div><div class="said">${esc(text)}</div></div>`);
   }
-  function addMe(text){
+  function addYou(text){
     transcript.insertAdjacentHTML('beforeend',
-      `<div class="turn me"><span class="who">You</span><div class="bubble">${esc(text)}</div></div>`);
+      `<div class="turn you"><div class="voice">You</div><div class="said">${esc(text)}</div></div>`);
   }
   function addCoach(c){
     const tags = (c.techniquesSpotted||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('');
     transcript.insertAdjacentHTML('beforeend',
-      `<div class="coach"><div class="coach-head">Coach</div><div class="coach-body">
-        ${c.worked?`<div class="worked"><b>Worked:</b> ${esc(c.worked)}</div>`:''}
-        ${c.adjust?`<div class="adjust"><b>Try:</b> ${esc(c.adjust)}</div>`:''}
+      `<div class="coach"><div class="voice">Coach's note</div>
+        ${c.worked?`<div class="line worked"><b>Worked.</b> ${esc(c.worked)}</div>`:''}
+        ${c.adjust?`<div class="line adjust"><b>Try.</b> ${esc(c.adjust)}</div>`:''}
         ${tags?`<div class="tags">${tags}</div>`:''}
-      </div></div>`);
+      </div>`);
+  }
+  function addDebrief(d){
+    const leaned = (d.leaned_on||[]).map(t=>`<li>${esc(t)}</li>`).join('') || '<li>·</li>';
+    const watch = (d.watch_for||[]).map(t=>`<li>${esc(t)}</li>`).join('') || '<li>·</li>';
+    transcript.insertAdjacentHTML('beforeend',
+      `<div class="debrief">
+        <div class="voice">Session debrief</div>
+        ${d.headline?`<h2>${esc(d.headline)}</h2>`:''}
+        <div class="cols">
+          <div class="col"><div class="label">You leaned on</div><ul>${leaned}</ul></div>
+          <div class="col"><div class="label">Watch for</div><ul>${watch}</ul></div>
+        </div>
+        ${d.summary?`<p class="summary">${esc(d.summary)}</p>`:''}
+        ${d.carry_forward?`<div class="carry"><b>Carry forward.</b> ${esc(d.carry_forward)}</div>`:''}
+      </div>`);
   }
   function thinking(on){
     let t = document.getElementById('thinking');
-    if(on && !t){ transcript.insertAdjacentHTML('beforeend','<div class="thinking" id="thinking">listening…</div>'); }
+    if(on && !t){ transcript.insertAdjacentHTML('beforeend','<div class="thinking" id="thinking">listening...</div>'); }
     if(!on && t){ t.remove(); }
   }
 
@@ -225,10 +281,13 @@
     current = SCENARIOS[Number(sel.value)];
     history = [];
     transcript.innerHTML = '';
-    addPeer(current.opener);
-    composer.style.display = 'flex';
+    addThem(current.opener);
+    composer.style.display = 'block';
     replyEl.value = ''; replyEl.focus();
     errEl.style.display = 'none';
+    wrapBtn.style.display = 'none';
+    wrapBtn.disabled = false;
+    sendBtn.disabled = false;
   }
   startBtn.addEventListener('click', start);
 
@@ -236,34 +295,27 @@
     const text = replyEl.value.trim();
     if(!text || !current) return;
     errEl.style.display = 'none';
-    addMe(text);
+    addYou(text);
     replyEl.value = '';
     sendBtn.disabled = true;
     thinking(true);
-
     try {
       const res = await fetch('/api/coach', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          graderInstructions: grader,
-          scenarioOpener: current.opener,
-          history,
-          userReply: text,
-        }),
+        body: JSON.stringify({ graderInstructions: grader, scenarioOpener: current.opener, history, userReply: text }),
       });
       const data = await res.json();
       thinking(false);
       if(!res.ok){ throw new Error(data.error || 'Request failed'); }
-
       if(data.coach) addCoach(data.coach);
-      if(data.peerReply && data.peerReply !== '(…)') addPeer(data.peerReply);
-
+      if(data.peerReply && data.peerReply !== '(…)') addThem(data.peerReply);
       history.push({ role:'user', content: text });
       history.push({ role:'assistant', content: JSON.stringify(data) });
+      wrapBtn.style.display = 'inline-block';
     } catch(e){
       thinking(false);
-      errEl.textContent = e.message + ' — give it a moment and try again.';
+      errEl.textContent = e.message + '. Give it a moment and try again.';
       errEl.style.display = 'block';
     } finally {
       sendBtn.disabled = false;
@@ -272,6 +324,34 @@
   }
   sendBtn.addEventListener('click', send);
   replyEl.addEventListener('keydown', e=>{ if(e.key==='Enter' && (e.metaKey||e.ctrlKey)) send(); });
+
+  async function wrapUp(){
+    if(!current || history.length === 0) return;
+    errEl.style.display = 'none';
+    wrapBtn.disabled = true;
+    sendBtn.disabled = true;
+    thinking(true);
+    try {
+      const res = await fetch('/api/coach', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ mode:'debrief', debriefInstructions: debriefPrompt, scenarioOpener: current.opener, history }),
+      });
+      const data = await res.json();
+      thinking(false);
+      if(!res.ok){ throw new Error(data.error || 'Request failed'); }
+      addDebrief(data);
+      composer.style.display = 'none';
+    } catch(e){
+      thinking(false);
+      errEl.textContent = e.message + '. Give it a moment and try again.';
+      errEl.style.display = 'block';
+      wrapBtn.disabled = false;
+      sendBtn.disabled = false;
+    } finally {
+      window.scrollTo({ top: document.body.scrollHeight, behavior:'smooth' });
+    }
+  }
+  wrapBtn.addEventListener('click', wrapUp);
 </script>
 </body>
-</html>
