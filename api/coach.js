@@ -47,15 +47,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { graderInstructions, scenarioOpener, history, userReply } = req.body || {};
+    const { graderInstructions, debriefInstructions, scenarioOpener, history, userReply, mode } = req.body || {};
 
-    if (!graderInstructions || !scenarioOpener || !userReply) {
+    const isDebrief = mode === "debrief";
+
+    if (!scenarioOpener) {
+      return res.status(400).json({ error: "Missing required fields." });
+    }
+    if (isDebrief && !debriefInstructions) {
+      return res.status(400).json({ error: "Missing debrief instructions." });
+    }
+    if (!isDebrief && (!graderInstructions || !userReply)) {
       return res.status(400).json({ error: "Missing required fields." });
     }
 
-    // Build the conversation: the scenario opener, any prior turns, then the
-    // trainee's newest reply. We ask the model to both respond in-character and
-    // coach, returning JSON.
+    // Build the conversation. In coaching mode we replay the dialogue and ask
+    // for an in-character reply plus turn coaching. In debrief mode we hand the
+    // whole transcript over and ask for a session-level summary.
     const convo = [];
     convo.push({
       role: "user",
@@ -75,7 +83,16 @@ export default async function handler(req, res) {
           convo.push({ role: "assistant", content: turn.content });
       }
     }
-    convo.push({ role: "user", content: userReply });
+
+    if (isDebrief) {
+      convo.push({
+        role: "user",
+        content:
+          "The practice session is over. Looking back across this whole conversation, give me my end-of-session debrief in the required JSON shape.",
+      });
+    } else {
+      convo.push({ role: "user", content: userReply });
+    }
 
     const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -87,7 +104,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
         max_tokens: 1000,
-        system: graderInstructions,
+        system: isDebrief ? debriefInstructions : graderInstructions,
         messages: convo,
       }),
     });
